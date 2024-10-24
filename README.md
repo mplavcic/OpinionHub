@@ -24,8 +24,8 @@ Ako ocete sami probat kod: (LINUX/MACOS/UNIX)
   - npm run ime_skripte (pogledaj moguce skripte pod "scripts" u `package.json`)
   - odi u browser i isprobaj rute
 
-localhost:3000
-localhost:3000/login
+localhost:3000  
+localhost:3000/login  
 localhost:3000/signup
 
 
