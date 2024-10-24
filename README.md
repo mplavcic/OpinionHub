@@ -1,6 +1,6 @@
 # OpinionHub
 
-![alt text](https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes/mvc_express.png "Arhitektura cijele aplikacije")
+<img src="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes/mvc_express.png" width="300" height="200" alt="Arhitektura">
 
 File struktura je izgenerirana sa express-generator.
 
