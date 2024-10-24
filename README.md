@@ -1,6 +1,6 @@
 # OpinionHub
 
-<img src="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes/mvc_express.png" width="500" height="200" alt="Arhitektura">
+<img src="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes/mvc_express.png" width="500" height="300" alt="Arhitektura">
 
 File struktura je izgenerirana sa express-generator.
 
