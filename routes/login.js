@@ -3,7 +3,7 @@ var router = express.Router();
 const user_controller = require("../controllers/userController.js");
 
 /* GET login page. */
-router.get("/", function(req, res, next) {
+router.get("/", function(req, res) {
   res.render("login");
 });
 

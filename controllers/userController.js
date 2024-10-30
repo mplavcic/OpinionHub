@@ -51,11 +51,12 @@ exports.user_login_post = asyncHandler(async (req, res, next) => {
             { expiresIn: process.env.JWT_ACCESS_EXPIRATION || '1h' } // Default to 1 hour expiration
         );
     
-    res.status(200).send({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        accessToken: token,
+    // Set the token in an HTTP-only cookie
+    res.cookie('OpinionHub_token', token, {
+        httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
+        secure: process.env.NODE_ENV === 'production', // Ensures the cookie is sent only over HTTPS in production
+        //maxAge: 3600000, // Cookie expires in 1 hour (same as the token expiration)
     });
-
+    
+    res.redirect("surveys");
 });
