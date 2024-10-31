@@ -1,16 +1,23 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 const authenticateToken = (req, res, next) => {
+
+    if (req.path === '/surveys/logout') {
+        return next();
+    }
+
     const token = req.cookies.OpinionHub_token;
 
     if (!token) {
-        return res.status(401).json('Access denied. No token provided.');
+        res.cookie("redirectTo", req.originalUrl, { httpOnly: true });
+        return res.redirect("/login");
     }
 
     // Verify the token
-    jwt.verify(token, process.env.JWT_SECRET || 'default_jwt_secret', (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET || "default_jwt_secret", (err, user) => {
         if (err) {
-            return res.status(403).json('Invalid or expired token.');
+            res.cookie("redirectTo", req.originalUrl, { httpOnly: true });
+            return res.redirect("/login"); 
         }
 
         // Attach the user object to the request so it's available in the next handlers

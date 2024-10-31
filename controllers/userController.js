@@ -1,10 +1,10 @@
 const User = require("../models/user");
 const asyncHandler = require("express-async-handler");
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 // Handle User signup (create) on POST.
-exports.user_create_post = asyncHandler(async (req, res, next) => {
+exports.user_create_post = asyncHandler(async (req, res) => {
    
     const { name,  password } = req.body;
        
@@ -26,7 +26,7 @@ exports.user_create_post = asyncHandler(async (req, res, next) => {
 });
 
 // Handle User login on POST.
-exports.user_login_post = asyncHandler(async (req, res, next) => {
+exports.user_login_post = asyncHandler(async (req, res) => {
     
     const { name, password } = req.body;
     
@@ -35,28 +35,39 @@ exports.user_login_post = asyncHandler(async (req, res, next) => {
         name
     }).exec();
     if (!user) {
-        return res.status(404).json('Username not found');
+        return res.status(404).json("Username not found");
     }
 
     // Verify password
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
-        return res.status(401).json('Incorrect password!');
+        return res.status(401).json("Incorrect password!");
     }
     
     // Authenticate user with jwt
     const token = jwt.sign(
             { id: user.id }, 
-            process.env.JWT_SECRET || 'default_jwt_secret', // Use a default if the env variable isn't set
-            { expiresIn: process.env.JWT_ACCESS_EXPIRATION || '1h' } // Default to 1 hour expiration
+            process.env.JWT_SECRET || "default_jwt_secret", // Use a default if the env variable isn't set
+            { expiresIn: process.env.JWT_ACCESS_EXPIRATION || "1h" } // Default to 1 hour expiration
         );
     
     // Set the token in an HTTP-only cookie
-    res.cookie('OpinionHub_token', token, {
+    res.cookie("OpinionHub_token", token, {
         httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
-        secure: process.env.NODE_ENV === 'production', // Ensures the cookie is sent only over HTTPS in production
-        //maxAge: 3600000, // Cookie expires in 1 hour (same as the token expiration)
+        secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS in production
     });
     
-    res.redirect("surveys");
+    const redirectTo = req.cookies.redirectTo ? req.cookies.redirectTo : "/surveys";
+    res.clearCookie("redirectTo"); // Clear the redirectTo cookie after reading it
+
+    res.redirect(redirectTo);
 });
+
+// logout user
+exports.user_logout = (req, res) => {
+
+    res.clearCookie("OpinionHub_token");
+
+    res.redirect("/"); 
+};
+
