@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 // Handle User signup (create) on POST.
-exports.user_create_post = asyncHandler(async (req, res) => {
+exports.user_create_post = asyncHandler(async (req, res, next) => {
    
     const { name,  password } = req.body;
        
@@ -13,7 +13,7 @@ exports.user_create_post = asyncHandler(async (req, res) => {
             name
         }).exec();
         if (userExists) {
-            return res.status(400).send("Username already exists");
+            return res.status(401).json({ message: "Incorrect password!" });
         }
 
         await User.create({
@@ -26,7 +26,7 @@ exports.user_create_post = asyncHandler(async (req, res) => {
 });
 
 // Handle User login on POST.
-exports.user_login_post = asyncHandler(async (req, res) => {
+exports.user_login_post = asyncHandler(async (req, res, next) => {
     
     const { name, password } = req.body;
     
@@ -35,13 +35,13 @@ exports.user_login_post = asyncHandler(async (req, res) => {
         name
     }).exec();
     if (!user) {
-        return res.status(404).json("Username not found");
+        return res.status(404).json({ message: "Username not found" });
     }
 
     // Verify password
     const passwordValid = await bcrypt.compare(password, user.password);
     if (!passwordValid) {
-        return res.status(401).json("Incorrect password!");
+        return res.status(401).json({ message: "Incorrect password!" });
     }
     
     // Authenticate user with jwt
@@ -59,15 +59,14 @@ exports.user_login_post = asyncHandler(async (req, res) => {
     
     const redirectTo = req.cookies.redirectTo ? req.cookies.redirectTo : "/surveys";
     res.clearCookie("redirectTo"); // Clear the redirectTo cookie after reading it
-
-    res.redirect(redirectTo);
+    res.status(200).json({ redirectTo });
 });
 
 // logout user
-exports.user_logout = (req, res) => {
+exports.user_logout = asyncHandler(async (req, res, next) => {
 
     res.clearCookie("OpinionHub_token");
 
     res.redirect("/"); 
-};
+});
 

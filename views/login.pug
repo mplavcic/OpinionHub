@@ -2,9 +2,10 @@ doctype html
 html
   head
     title= title
+    script(src="/javascripts/login.js")
   body
     h1= title
-    form(action="/login" method="POST")
+    form#loginForm(action="/login" method="POST")
       div
         label(for="name") Name:
         input(type="text" id="name" name="name" required)
@@ -13,4 +14,5 @@ html
         input(type="password" id="password" name="password" required)
       div
         button(type="submit") Login
+    p#error-message(style="color: red;")
 
