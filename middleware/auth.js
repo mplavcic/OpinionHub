@@ -1,8 +1,9 @@
+const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 
 const authenticateToken = (req, res, next) => {
 
-    if (req.path === '/surveys/logout') {
+    if (req.path === '/home/logout') {
         return next();
     }
 

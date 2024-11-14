@@ -1,0 +1,31 @@
+doctype html
+html
+    head
+    title Create a New Survey
+    script(src="/javascripts/survey_create.js")
+body
+    h1 Create a new survey
+
+    //- Survey creation form
+    form(action="/home/survey/create" method="POST")
+        
+        div
+            label(for="title") Title:
+            input(type="text" name="title" id="title" required placeholder="Enter survey title")
+
+        div
+            label(for="description") Description:
+            textarea(name="description" id="description" rows="4" placeholder="Enter survey description")
+
+        div
+            label(for="expiresAt") Expiration Date:
+            input(type="date" name="expiresAt" id="expiresAt")
+
+        //- Container for questions
+        div#questions-container
+            h2 Questions
+            button(type="button" onclick="addQuestion()") Add Question
+        div
+
+        button(type="submit") Create Survey
+

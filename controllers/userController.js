@@ -57,7 +57,7 @@ exports.user_login_post = asyncHandler(async (req, res, next) => {
         secure: process.env.NODE_ENV === "production", // Ensures the cookie is sent only over HTTPS in production
     });
     
-    const redirectTo = req.cookies.redirectTo ? req.cookies.redirectTo : "/surveys";
+    const redirectTo = req.cookies.redirectTo ? req.cookies.redirectTo : "/home";
     res.clearCookie("redirectTo"); // Clear the redirectTo cookie after reading it
     res.status(200).json({ redirectTo });
 });
