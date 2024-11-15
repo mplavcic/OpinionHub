@@ -5,6 +5,7 @@ const MultipleChoiceQuestion = require("../models/question_multiple_choice");
 const RatingQuestion = require("../models/question_rating");
 const TextQuestion = require("../models/question_text");
 const asyncHandler = require("express-async-handler");
+const moment = require("moment");
 
 // Display list of all Surveys.
 exports.survey_list = asyncHandler(async (req, res, next) => {
@@ -15,25 +16,32 @@ exports.survey_list = asyncHandler(async (req, res, next) => {
 
 // Display detail page for a specific Survey.
 exports.survey_detail = asyncHandler(async (req, res, next) => {
-  res.send(`NOT IMPLEMENTED: Survey detail: ${req.params.id}`);
+    const surveyId = req.params.id;
+    const survey = await Survey.findById(surveyId).exec();
+    const formattedExpiresAt = moment(survey.expires_at).format("MMMM Do YYYY");
+
+    res.render("survey_detail", { 
+        title: survey.title, 
+        survey:survey,
+        formattedExpiresAt: formattedExpiresAt
+    });
 });
 
 // Display Survey create form on GET.
 exports.survey_create_get = asyncHandler(async (req, res, next) => {
-  res.render("survey_create");
+    res.render("survey_create");
 });
 
 // Handle Survey create on POST.
 exports.survey_create_post = asyncHandler(async (req, res, next) => {
   
-    console.log(req.body);
     const { title, description, expires_at, questions } = req.body;
 
     const newSurvey = new Survey({
         title,
         description,
         created_by: new mongoose.Types.ObjectId(req.user._id),
-        expires_at,
+        expires_at: moment(expires_at).toDate()
     });
 
     const savedSurvey = await newSurvey.save();
@@ -77,6 +85,16 @@ exports.survey_create_post = asyncHandler(async (req, res, next) => {
     await savedSurvey.save();
 
     res.redirect("/home");
+});
+
+// Display Survey take form on GET
+exports.survey_take_get = asyncHandler(async (req, res, next) => {
+    const surveyId = req.params.id;
+    const survey = await Survey.findById(surveyId).populate("questions").exec();
+    res.render("survey_take", {
+        title: `Take Survey: ${survey.title}`,
+        survey,
+    });
 });
 
 // Display Survey delete form on GET.

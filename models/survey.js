@@ -11,7 +11,7 @@ const SurveySchema = new Schema({
     created_at: { type: Date, default: Date.now }, // Date the survey was created
     //published_at: { type: Date }, // Date the survey was published
     //updated_at: { type: Date, default: Date.now }, // Last update timestamp
-    expires_at: { type: Date }, // Expiration date for the survey
+    expires_at: { type: Date, required: true }, // Expiration date for the survey
     //response_count: { type: Number, default: 0 }, // Count of responses
     //tags: [{ type: String }], // Tags or categories for the survey
     //is_anonymous: { type: Boolean, default: false } // Whether responses are anonymous

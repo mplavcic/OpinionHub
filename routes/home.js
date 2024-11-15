@@ -20,6 +20,9 @@ router.get("/survey/create", survey_controller.survey_create_get);
 // POST request for creating Survey.
 router.post("/survey/create", survey_controller.survey_create_post);
 
+// GET request for taking Survey.
+router.get("/survey/:id/take", survey_controller.survey_take_get);
+
 // GET request to delete Survey.
 router.get("/survey/:id/delete", survey_controller.survey_delete_get);
 

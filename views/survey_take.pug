@@ -1,0 +1,25 @@
+doctype html
+html
+    head
+        title= title
+    body
+        h1= survey.title
+        p= survey.description
+
+        // Display the questions
+        form(action=`/survey/${survey._id}/take` method="POST")
+            each question in survey.questions
+                div
+                    label(for=`question-${question._id}`)= question.questionText
+                    if question.questionType === "text"
+                        input(type="text" id=`question-${question._id}` name=`answers[${question._id}]` placeholder="Your answer" required)
+                    else if question.questionType === "multiple-choice"
+                        each option in question.options
+                            div
+                                input(type="radio" id=`option-${question._id}-${option}` name=`answers[${question._id}]` value=option)
+                                label(for=`option-${question._id}-${option}`)= option
+                    else if question.questionType === "rating"
+                        input(type="number" id=`question-${question._id}` name=`answers[${question._id}]` min=1 max=5 placeholder="Rate 1-5" required)
+
+            button(type="submit") Finish Survey
+
