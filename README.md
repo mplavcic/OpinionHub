@@ -2,52 +2,52 @@
 
 <img src="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes/mvc_express.png" width="500" height="300" alt="Arhitektura">
 
-**Routes**:
- /
- /login
- /signup
+**Routes**:<br>
+ /<br>  
+ /login<br>  
+ /signup<br>  
 
- all protected routes start with /home
- /home
- /home/survey/create"
- /home/survey/:id/take
- /home/survey/:id/delete
- /home/survey/:id/update
- /home/survey/:id
- /home/surveys
+ all protected routes start with /home<br>  
+ /home<br>  
+ /home/survey/create"<br>
+ /home/survey/:id/take<br>  
+ /home/survey/:id/delete<br> 
+ /home/survey/:id/update<br>  
+ /home/survey/:id<br>  
+ /home/surveys<br>  
 
-**Controllers**:
- user_create_post 
- user_login_post  
- user_logout 
+**Controllers**:<br>  
+ user_create_post<br>   
+ user_login_post<br>    
+ user_logout<br>   
  
- survey_list 
- survey_detail 
- survey_create_get 
- survey_create_post 
- survey_take_get 
- survey_delete_get 
- survey_delete_post 
- survey_update_get 
- survey_update_post 
+ survey_list<br>   
+ survey_detail<br>   
+ survey_create_get<br>   
+ survey_create_post<br>   
+ survey_take_get<br>   
+ survey_delete_get<br>   
+ survey_delete_post<br>   
+ survey_update_get<br> 
+ survey_update_post<br> 
 
- question_list 
- question_detail 
- question_create_get 
- question_create_post 
- question_delete_get 
- question_delete_post 
- question_update_get 
- question_update_post 
+ question_list<br> 
+ question_detail<br> 
+ question_create_get<br> 
+ question_create_post<br> 
+ question_delete_get<br> 
+ question_delete_post<br> 
+ question_update_get<br> 
+ question_update_post<br> 
  
- answer_list 
- answer_detail 
- answer_create_get 
- answer_create_post 
- answer_delete_get 
- answer_delete_post 
- answer_update_get 
- answer_update_post 
+ answer_list<br>
+ answer_detail<br> 
+ answer_create_get<br> 
+ answer_create_post<br> 
+ answer_delete_get<br> 
+ answer_delete_post<br> 
+ answer_update_get<br> 
+ answer_update_post<br>
 
 
 
