@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 const Survey = require("../models/survey");
-const Question = require("../models/question");
-const MultipleChoiceQuestion = require("../models/question_multiple_choice");
-const RatingQuestion = require("../models/question_rating");
-const TextQuestion = require("../models/question_text");
+const Question = require("../models/question/question");
+const MultipleChoiceQuestion = require("../models/question/question_multiple_choice");
+const RatingQuestion = require("../models/question/question_rating");
+const TextQuestion = require("../models/question/question_text");
 const asyncHandler = require("express-async-handler");
 const moment = require("moment");
 
@@ -32,15 +32,16 @@ exports.survey_create_get = asyncHandler(async (req, res, next) => {
     res.render("survey_create");
 });
 
+
 // Handle Survey create on POST.
 exports.survey_create_post = asyncHandler(async (req, res, next) => {
-  
     const { title, description, expires_at, questions } = req.body;
+    console.log(req.user);
 
     const newSurvey = new Survey({
         title,
         description,
-        created_by: new mongoose.Types.ObjectId(req.user._id),
+        created_by: new mongoose.Types.ObjectId(req.user.id),
         expires_at: moment(expires_at).toDate()
     });
 
@@ -60,7 +61,7 @@ exports.survey_create_post = asyncHandler(async (req, res, next) => {
                     break;
                 case "rating":
                     questionModel = new RatingQuestion({
-                        survey: savedSurvey._id,
+                        survey: savedSurvey._id, 
                         questionText: q.questionText,
                         questionType: q.questionType,
                         min: q.min,
@@ -70,18 +71,21 @@ exports.survey_create_post = asyncHandler(async (req, res, next) => {
                 case "text":
                 default:
                     questionModel = new TextQuestion({
-                        survey: savedSurvey._id,
+                        survey: savedSurvey._id, 
                         questionText: q.questionText,
                         questionType: q.questionType,
                         placeholder: q.placeholder || "",
                     });
                     break;
             }
-            return questionModel.save();
+
+            const savedQuestion = await questionModel.save();
+            return savedQuestion; 
         })
     );
 
     savedSurvey.questions = questionDocs.map((qDoc) => qDoc._id);
+
     await savedSurvey.save();
 
     res.redirect("/home");
