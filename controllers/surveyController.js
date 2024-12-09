@@ -4,6 +4,7 @@ const Question = require("../models/question/question");
 const MultipleChoiceQuestion = require("../models/question/question_multiple_choice");
 const RatingQuestion = require("../models/question/question_rating");
 const TextQuestion = require("../models/question/question_text");
+const Response = require("../models/response");
 const asyncHandler = require("express-async-handler");
 const moment = require("moment");
 
@@ -36,7 +37,6 @@ exports.survey_create_get = asyncHandler(async (req, res, next) => {
 // Handle Survey create on POST.
 exports.survey_create_post = asyncHandler(async (req, res, next) => {
     const { title, description, expires_at, questions } = req.body;
-    console.log(req.user);
 
     const newSurvey = new Survey({
         title,
@@ -99,6 +99,22 @@ exports.survey_take_get = asyncHandler(async (req, res, next) => {
         title: `Take Survey: ${survey.title}`,
         survey,
     });
+});
+
+// Submit Survey take form on POST
+exports.survey_take_post = asyncHandler(async (req, res, next) => {
+    const { id: surveyId } = req.params; 
+    const answers = req.body.answers;
+
+    const responses = Object.entries(answers).map(([questionId, responseValue]) => ({
+        survey: surveyId,
+        question: questionId,
+        responseValue,
+    }));
+
+    await Response.insertMany(responses);
+
+    res.redirect("/home");
 });
 
 // Display Survey delete form on GET.

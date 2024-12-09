@@ -21,8 +21,7 @@ exports.user_create_post = asyncHandler(async (req, res, next) => {
             password: await bcrypt.hash(password, 15),
         });
 
-        return res.status(200).send("Signup successful");
-
+        res.redirect("/home");
 });
 
 // Handle User login on POST.

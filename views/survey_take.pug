@@ -7,7 +7,7 @@ html
         p= survey.description
 
         // Display the questions
-        form(action=`/survey/${survey._id}/take` method="POST")
+        form(action=`/home/survey/${survey._id}/take` method="POST")
             each question in survey.questions
                 div
                     label(for=`question-${question._id}`)= question.questionText
