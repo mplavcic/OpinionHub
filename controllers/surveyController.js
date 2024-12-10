@@ -167,25 +167,6 @@ exports.user_survey_detail = asyncHandler(async (req, res, next) => {
     });
 });
 
-// Display Survey delete form on GET.
-exports.survey_delete_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Survey delete GET");
-});
-
-// Handle Survey delete on POST.
-exports.survey_delete_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Survey delete POST");
-});
-
-// Display Survey update form on GET.
-exports.survey_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Survey update GET");
-});
-
-// Handle Survey update on POST.
-exports.survey_update_post = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: Survey update POST");
-});
 
 
 

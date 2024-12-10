@@ -14,7 +14,7 @@
  
  all protected routes start with /home<br>
  /home<br> 
- /home/surveys/create<br>
+ /home/my-surveys/create<br>
  /home/my-surveys/:id <br>
 
 **Controllers**:<br>

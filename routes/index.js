@@ -4,7 +4,7 @@ const router = express.Router();
 const survey_controller = require("../controllers/surveyController.js");
 const index_controller = require("../controllers/indexController.js");
 
-/* GET home page. */
+// GET home page.
 router.get('/', index_controller.index);
 
 // GET request for one Survey.
