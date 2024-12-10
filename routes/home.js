@@ -20,12 +20,6 @@ router.get("/survey/create", survey_controller.survey_create_get);
 // POST request for creating Survey.
 router.post("/survey/create", survey_controller.survey_create_post);
 
-// GET request for taking Survey.
-router.get("/survey/:id/take", survey_controller.survey_take_get);
-
-// POST request for taking Survey.
-router.post("/survey/:id/take", survey_controller.survey_take_post);
-
 // GET request to delete Survey.
 router.get("/survey/:id/delete", survey_controller.survey_delete_get);
 
@@ -40,9 +34,6 @@ router.post("/survey/:id/update", survey_controller.survey_update_post);
 
 // GET request for one Survey.
 router.get("/survey/:id", survey_controller.survey_detail);
-
-// GET request for list of all Surveys.
-router.get("/surveys", survey_controller.survey_list);
 
 module.exports = router;
 

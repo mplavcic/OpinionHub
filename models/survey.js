@@ -20,7 +20,7 @@ const SurveySchema = new Schema({
 // Virtual for survey's URL
 SurveySchema.virtual("url").get(function () {
     // We don't use an arrow function as we'll need the this object
-    return `/home/survey/${this._id}`;
+    return `/survey/${this._id}`;
 });
 
 module.exports = mongoose.model("Survey", SurveySchema);
