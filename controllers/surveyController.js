@@ -33,7 +33,6 @@ exports.survey_create_get = asyncHandler(async (req, res, next) => {
     res.render("survey_create");
 });
 
-
 // Handle Survey create on POST.
 exports.survey_create_post = asyncHandler(async (req, res, next) => {
     const { title, description, expires_at, questions } = req.body;
