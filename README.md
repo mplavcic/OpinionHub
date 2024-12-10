@@ -36,20 +36,20 @@
 
  **Views**:<br>
  
- layout
- layout_home
+ layout<br>
+ layout_home<br>
 
- index
- login
- signup
- home
+ index<br>
+ login<br>
+ signup<br>
+ home<br>
 
- survey_create
- survey_detail
- survey_list
- survey_take
- user_survey_detail
- user_surveys
+ survey_create<br>
+ survey_detail<br>
+ survey_list<br>
+ survey_take<br>
+ user_survey_detail<br>
+ user_surveys<br>
 
  
 
