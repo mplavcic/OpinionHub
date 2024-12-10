@@ -32,8 +32,12 @@ router.get("/survey/:id/update", survey_controller.survey_update_get);
 // POST request to update Survey.
 router.post("/survey/:id/update", survey_controller.survey_update_post);
 
-// GET request for one Survey.
-router.get("/survey/:id", survey_controller.survey_detail);
+// GET request to display a list of the user's own surveys
+router.get('/my-surveys', survey_controller.user_survey_list);
+
+// GET request to display details of the user's own survey
+router.get('/my-surveys/:id', survey_controller.user_survey_detail);
+
 
 module.exports = router;
 

@@ -117,6 +117,57 @@ exports.survey_take_post = asyncHandler(async (req, res, next) => {
     res.redirect("/home");
 });
 
+exports.user_survey_list = asyncHandler(async (req, res, next) => {
+    const userId = req.user.id;
+
+    const surveys = await Survey.find({ created_by: userId });
+
+    res.render('user_surveys', { title: 'My Published Surveys', survey_list: surveys });
+});
+
+exports.user_survey_detail = asyncHandler(async (req, res, next) => {
+    const surveyId = req.params.id;
+
+    const survey = await Survey.findById(surveyId).populate("questions");
+
+    const responses = await Response.find({ survey: surveyId });
+
+    const analytics = {};
+    survey.questions.forEach((question) => {
+        const questionResponses = responses.filter(
+            (response) => response.question.toString() === question._id.toString()
+        );
+
+        if (question.questionType === "multiple-choice") {
+            const counts = {};
+            question.options.forEach((option) => {
+                counts[option] = questionResponses.filter(
+                    (response) => response.responseValue === option
+                ).length;
+            });
+            analytics[question._id] = { type: "multiple-choice", counts };
+        } else if (question.questionType === "rating") {
+            const total = questionResponses.reduce(
+                (sum, response) => sum + parseInt(response.responseValue, 10),
+                0
+            );
+            const avg = questionResponses.length
+                ? total / questionResponses.length
+                : 0;
+            analytics[question._id] = { type: "rating", average: avg };
+        } else if (question.questionType === "text") {
+            const texts = questionResponses.map((response) => response.responseValue);
+            analytics[question._id] = { type: "text", responses: texts };
+        }
+    });
+
+    res.render("user_survey_detail", {
+        title: `Analytics for ${survey.title}`,
+        survey,
+        analytics,
+    });
+});
+
 // Display Survey delete form on GET.
 exports.survey_delete_get = asyncHandler(async (req, res, next) => {
   res.send("NOT IMPLEMENTED: Survey delete GET");

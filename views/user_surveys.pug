@@ -1,0 +1,13 @@
+extends layout_home
+
+block content
+  h1 My Published Surveys
+
+  if survey_list.length
+    ul
+      each survey in survey_list
+        li
+          a(href=survey.own_url) #{survey.title}
+  else
+    p You haven't published any surveys yet.
+

@@ -23,5 +23,12 @@ SurveySchema.virtual("url").get(function () {
     return `/survey/${this._id}`;
 });
 
+// Virtual for own survey's URL
+SurveySchema.virtual("own_url").get(function () {
+    // We don't use an arrow function as we'll need the this object
+    return `/home/my-surveys/${this._id}`;
+});
+
+
 module.exports = mongoose.model("Survey", SurveySchema);
 
