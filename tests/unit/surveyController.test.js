@@ -16,7 +16,7 @@ jest.mock("../../middleware/auth", () => {
 
 const authenticateToken = require("../../middleware/auth");
 const surveyController = require("../../controllers/surveyController");
-const Survey = require("../../models/survey");
+const Survey = require("../../models/survey/survey");
 const Question = require("../../models/question/question");
 const MultipleChoiceQuestion = require("../../models/question/question_multiple_choice");
 const RatingQuestion = require("../../models/question/question_rating");

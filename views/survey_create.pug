@@ -7,7 +7,7 @@ body
     h1 Create a new survey
 
     //- Survey creation form
-    form(action="/home/survey/create" method="POST")
+    form(action="/home/my-surveys/create" method="POST")
         
         div
             label(for="title") Title:
@@ -16,10 +16,6 @@ body
         div
             label(for="description") Description:
             textarea(name="description" id="description" rows="4" placeholder="Enter survey description")
-
-        div
-            label(for="expires_at") Expiration Date:
-            input(type="date" name="expires_at" id="expires_at" required)
 
         //- Container for questions
         div#questions-container

@@ -8,7 +8,7 @@ block content
     ul
       each survey in survey_list
         li
-          a(href=survey.url) #{survey.title}
+          a(href=survey.public_url) #{survey.survey.title}
 
   else
     p There are no surveys.

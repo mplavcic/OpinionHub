@@ -14,8 +14,11 @@
  
  all protected routes start with /home<br>
  /home<br> 
+ /home/logout<br> 
+ /home/my_surveys<br> 
+ /home/my-surveys/saved/:id<br>
+ /home/my-surveys/published/:id<br>
  /home/my-surveys/create<br>
- /home/my-surveys/:id <br>
 
 **Controllers**:<br>
  

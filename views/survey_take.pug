@@ -3,12 +3,12 @@ html
     head
         title= title
     body
-        h1= survey.title
-        p= survey.description
+        h1= survey.survey.title  
+        p= survey.survey.description  
 
-        // Display the questions
-        form(action=`/survey/${survey._id}/take` method="POST")
-            each question in survey.questions
+        // Display the questions in a form
+        form(action=`/survey/${survey._id}/take` method="POST")  
+            each question in survey.survey.questions  
                 div
                     label(for=`question-${question._id}`)= question.questionText
                     if question.questionType === "text"

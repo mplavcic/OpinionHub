@@ -1,0 +1,32 @@
+extends layout_home
+
+block content
+  h1= title
+
+  .survey-details
+    h2 Survey Details
+    p Title: #{survey.title}
+    p Description: #{survey.description}
+    p Published On: #{formattedPublishedAt}
+    p Expires On: #{formattedExpiresAt}
+
+  .analytics
+    h2 Analytics
+
+    each result in results
+      .question
+        h3= result.questionText
+        if result.type === 'multiple-choice'
+          ul
+            each option, count in result.counts
+              li
+                strong= option
+                span= " - " + count + " response(s)"
+        else if result.type === 'rating'
+          p Average Rating: #{result.average}
+        else if result.type === 'text'
+          p Text Responses:
+          ul
+            each text in result.responses
+              li= text
+

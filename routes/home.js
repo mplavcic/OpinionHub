@@ -21,10 +21,16 @@ router.get("/my-surveys/create", survey_controller.survey_create_get);
 router.post("/my-surveys/create", survey_controller.survey_create_post);
 
 // GET request to display a list of the user's own surveys
-router.get('/my-surveys', survey_controller.user_survey_list);
+router.get("/my-surveys", survey_controller.user_survey_list);
 
-// GET request to display details of the user's own survey
-router.get('/my-surveys/:id', survey_controller.user_survey_detail);
+// GET request to display details of the user's saved survey
+router.get("/my-surveys/saved/:id", survey_controller.survey_saved_detail);
+
+// POST request to publish user's saved survey
+router.post("/my-surveys/saved/:id", survey_controller.survey_publish_post);
+
+// GET request to display details of the user's published survey
+router.get("/my-surveys/published/:id", survey_controller.survey_published_detail)
 
 module.exports = router;
 

@@ -1,0 +1,11 @@
+extends layout_home
+
+block content
+  h1= title
+
+  form(action=`/home/my-surveys/${survey._id}/publish` method="POST")
+    div
+      label(for="expires_at") Expiration Date:
+      input(type="date" name="expires_at" id="expires_at" required)
+    button(type="submit") Publish
+

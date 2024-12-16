@@ -1,0 +1,62 @@
+extends layout_home
+
+block content
+  h1 Survey Details
+
+  // Display Survey Title
+  h2 Title
+  p= survey.title
+
+  // Display Survey Description
+  h2 Description
+  p= survey.description
+
+  // Display Survey Questions
+  h2 Questions
+  ul#question-list
+    each question, index in survey.questions
+      li
+        p Question #{index + 1}: #{question.questionText}
+
+        // Display options if the question is of type "multiple-choice"
+        if question.questionType === "multiple-choice"
+          ul
+            each option in question.options
+              li
+                p= option
+        else if question.questionType === "rating"
+          p Rating: #{question.options ? question.options.join(", ") : "1-5 scale"}
+        else if question.questionType === "text"
+          p Text answer
+
+    // Display Expiration Date and Instructions to Select
+  h2 Expiration Date
+  p Please choose an expiration date for the survey.
+
+  // Date Picker for Expiration Date
+  input(type="date" id="expires_at" name="expires_at" required)
+
+  // Action Buttons
+  form(action=`/home/my-surveys/saved/${survey._id}` method="POST")
+    // Hidden input to hold expiration date when form is submitted
+    input(type="hidden" id="expires_at_hidden" name="expires_at")
+
+    button(type="submit" id="publish-btn" disabled) Publish Survey
+
+  a(href="/home/my-surveys") Back to My Surveys
+
+  script.
+    // JavaScript to handle date selection and enable the Publish button
+    const expiresAtInput = document.getElementById("expires_at");
+    const publishBtn = document.getElementById("publish-btn");
+    const expiresAtHidden = document.getElementById("expires_at_hidden");
+
+    // Enable the Publish button only when a valid date is selected
+    expiresAtInput.addEventListener("change", function() {
+      if (expiresAtInput.value) {
+        publishBtn.disabled = false; // Enable button when date is selected
+        expiresAtHidden.value = expiresAtInput.value; // Set hidden field with selected date
+      } else {
+        publishBtn.disabled = true; // Keep the button disabled if no date is selected
+      }
+    });
