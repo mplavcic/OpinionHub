@@ -153,18 +153,18 @@ exports.user_survey_list = asyncHandler(async (req, res, next) => {
     const userId = req.user.id;
 
     const saved_surveys = await Survey.find({ created_by: userId });
-
-    const published_surveys = await PublishedSurvey.find()
-        .populate({
-            path: 'survey', 
-            match: { created_by: userId },  
-        });
-
+const published_surveys = await PublishedSurvey.find()
+    .populate({
+        path: 'survey',
+        match: { created_by: userId },
+        select: 'title', // Only fetch the `title` field
+    });
+    
     const filteredPublishedSurveys = published_surveys.filter(survey => survey.survey !== null);
 
     res.render("user_surveys", {
         title: "My Surveys",
-        published_surveys: published_surveys,
+        published_surveys: filteredPublishedSurveys,
         draft_surveys: saved_surveys,
         moment: moment, 
     });
