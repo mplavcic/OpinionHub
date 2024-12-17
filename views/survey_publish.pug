@@ -3,9 +3,8 @@ extends layout_home
 block content
   h1= title
 
-  form(action=`/home/my-surveys/${survey._id}/publish` method="POST")
-    div
-      label(for="expires_at") Expiration Date:
-      input(type="date" name="expires_at" id="expires_at" required)
-    button(type="submit") Publish
-
+  form(action=`/home/my-surveys/${survey._id}/publish`, method="POST", class="border p-4 rounded shadow-sm")
+    div(class="mb-3")
+      label(for="expires_at", class="form-label") Expiration Date:
+      input(type="date", name="expires_at", id="expires_at", class="form-control", required)
+    button(type="submit", class="btn btn-primary") Publish

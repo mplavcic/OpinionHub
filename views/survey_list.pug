@@ -3,10 +3,9 @@ extends layout_home
 block content
   h1= title
   if survey_list.length
-    ul
+    ul(class="list-group")
       each survey in survey_list
-        li
-          a(href=survey.published_url) #{survey.title} 
+        li(class="list-group-item")
+          a(href=survey.published_url, class="text-decoration-none") #{survey.title}
   else
-    p There are no published surveys.
-
+    p(class="text-danger") There are no published surveys.

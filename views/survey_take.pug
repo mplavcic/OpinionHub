@@ -2,24 +2,25 @@ doctype html
 html
     head
         title= title
-    body
-        h1= survey.survey.title  
-        p= survey.survey.description  
+        link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css")
+        link(rel='stylesheet', href='/stylesheets/style.css') 
+    body(class="container mt-4")
+        h1= survey.survey.title
+        p= survey.survey.description
 
         // Display the questions in a form
-        form(action=`/survey/${survey._id}/take` method="POST")  
-            each question in survey.survey.questions  
-                div
-                    label(for=`question-${question._id}`)= question.questionText
+        form(action=`/survey/${survey._id}/take`, method="POST")
+            each question in survey.survey.questions
+                div(class="mb-4")
+                    label(for=`question-${question._id}`, class="form-label")= question.questionText
                     if question.questionType === "text"
-                        input(type="text" id=`question-${question._id}` name=`answers[${question._id}]` placeholder="Your answer" required)
+                        input(type="text", id=`question-${question._id}`, name=`answers[${question._id}]`, class="form-control", placeholder="Your answer", required)
                     else if question.questionType === "multiple-choice"
                         each option in question.options
-                            div
-                                input(type="radio" id=`option-${question._id}-${option}` name=`answers[${question._id}]` value=option)
-                                label(for=`option-${question._id}-${option}`)= option
+                            div(class="form-check")
+                                input(type="radio", id=`option-${question._id}-${option}`, name=`answers[${question._id}]`, value=option, class="form-check-input")
+                                label(for=`option-${question._id}-${option}`, class="form-check-label")= option
                     else if question.questionType === "rating"
-                        input(type="number" id=`question-${question._id}` name=`answers[${question._id}]` min=1 max=5 placeholder="Rate 1-5" required)
+                        input(type="number", id=`question-${question._id}`, name=`answers[${question._id}]`, class="form-control", min=1, max=5, placeholder="Rate 1-5", required)
 
-            button(type="submit") Finish Survey
-
+            button(type="submit", class="btn btn-primary") Finish Survey

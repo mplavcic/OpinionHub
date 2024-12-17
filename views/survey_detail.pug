@@ -7,5 +7,5 @@ block content
   p Expires At: #{formattedExpiresAt}
 
   // Add Take Survey Button
-  form(action=`/survey/${survey._id}/take` method="get")
-    button.btn.btn-primary Take Survey
+  form(action=`/survey/${survey._id}/take`, method="get")
+    button.btn.btn-primary(type="submit") Take Survey

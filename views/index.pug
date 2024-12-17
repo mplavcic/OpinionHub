@@ -8,8 +8,8 @@ block content
     ul
       each survey in survey_list
         li
-          a(href=survey.public_url) #{survey.survey.title}
+          a(href=survey.public_url, class="fw-bold") #{survey.survey.title}
+          span(class="text-muted")  - Published on #{new Date(survey.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
 
   else
-    p There are no surveys.
-
+    p(class="alert alert-warning") There are no surveys yet.

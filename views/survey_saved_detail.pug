@@ -5,7 +5,7 @@ block content
 
   // Display Survey Title
   h2 Title
-  p= survey.title
+  p(class="fw-bold")= survey.title
 
   // Display Survey Description
   h2 Description
@@ -13,37 +13,37 @@ block content
 
   // Display Survey Questions
   h2 Questions
-  ul#question-list
+  ul(id="question-list", class="list-group")
     each question, index in survey.questions
-      li
+      li(class="list-group-item")
         p Question #{index + 1}: #{question.questionText}
 
         // Display options if the question is of type "multiple-choice"
         if question.questionType === "multiple-choice"
-          ul
+          ul(class="list-group list-group-flush")
             each option in question.options
-              li
+              li(class="list-group-item") 
                 p= option
         else if question.questionType === "rating"
           p Rating: #{question.options ? question.options.join(", ") : "1-5 scale"}
         else if question.questionType === "text"
           p Text answer
 
-    // Display Expiration Date and Instructions to Select
+  // Display Expiration Date
   h2 Expiration Date
   p Please choose an expiration date for the survey.
 
   // Date Picker for Expiration Date
-  input(type="date" id="expires_at" name="expires_at" required)
+  input(type="date", id="expires_at", name="expires_at", class="form-control", required)
 
   // Action Buttons
-  form(action=`/home/my-surveys/saved/${survey._id}` method="POST")
+  form(action=`/home/my-surveys/saved/${survey._id}`, method="POST", class="mt-3")
     // Hidden input to hold expiration date when form is submitted
-    input(type="hidden" id="expires_at_hidden" name="expires_at")
+    input(type="hidden", id="expires_at_hidden", name="expires_at")
 
-    button(type="submit" id="publish-btn" disabled) Publish Survey
+    button(type="submit", id="publish-btn", class="btn btn-primary", disabled) Publish Survey
 
-  a(href="/home/my-surveys") Back to My Surveys
+  a(href="/home/my-surveys", class="btn btn-secondary mt-3") Back to My Surveys
 
   script.
     // JavaScript to handle date selection and enable the Publish button

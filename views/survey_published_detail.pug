@@ -5,7 +5,7 @@ block content
 
   .survey-details
     h2 Survey Details
-    p Title: #{survey.title}
+    p(class="fw-bold") Title: #{survey.title}
     p Description: #{survey.description}
     p Published On: #{formattedPublishedAt}
     p Expires On: #{formattedExpiresAt}
@@ -14,12 +14,12 @@ block content
     h2 Analytics
 
     each result in results
-      .question
+      .question(class="mb-4")
         h3= result.questionText
         if result.type === 'multiple-choice'
-          ul
+          ul(class="list-group")
             each option, count in result.counts
-              li
+              li(class="list-group-item")
                 strong= option
                 span= " - " + count + " response(s)"
         else if result.type === 'rating'
@@ -28,5 +28,4 @@ block content
           p Text Responses:
           ul
             each text in result.responses
-              li= text
-
+              li(class="list-group-item")= text

@@ -3,13 +3,12 @@ extends layout
 block content
   h1 Sign Up
 
-  form(action='/signup', method='POST')
+  form(action='/signup', method='POST', class='border p-4 rounded shadow-sm')
+    div(class='mb-3')
+      label(for='name', class='form-label') Name:
+      input(type='text', id='name', name='name', placeholder='Enter your name', class='form-control', required)
+    div(class='mb-3')
+      label(for='password', class='form-label') Password:
+      input(type='password', id='password', name='password', placeholder='Enter your password', class='form-control', required)
     div
-      label(for='name') Name:
-      input(type='text', id='name', name='name', placeholder='Enter your name', required)
-    div
-      label(for='password') Password:
-      input(type='password', id='password', name='password', placeholder='Enter your password', required)
-    div
-      button(type='submit') Sign Up
-
+      button(type='submit', class='btn btn-primary w-100') Sign Up
