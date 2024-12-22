@@ -3,6 +3,7 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const config = require("./config");
 
 const authenticateToken = require("./middleware/auth");
 
@@ -17,7 +18,7 @@ const app = express();
 // Set up mongoose connection
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
-const mongoDB = "mongodb+srv://mateo:ovojesiframateo@cluster0.d4tpn.mongodb.net/OpinionHub?retryWrites=true&w=majority&appName=Cluster0";
+const mongoDB = config.databaseUrl;
 
 main().catch((err) => console.log(err));
 async function main() {
