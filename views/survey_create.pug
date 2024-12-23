@@ -19,8 +19,9 @@ html
                 textarea(name="description", id="description", class="form-control", rows="4", placeholder="Enter survey description")
 
             // Container for questions
-            div(id="questions-container")
+            div(id="questions-container", class="mb-4")
                 h2 Questions
-                button(type="button", class="btn btn-secondary", onclick="addQuestion()") Add Question
+                button(type="button", class="btn btn-secondary mb-3", onclick="addQuestion()") Add Question
 
             button(type="submit", class="btn btn-primary mt-3") Create Survey
+

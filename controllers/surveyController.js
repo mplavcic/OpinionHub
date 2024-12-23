@@ -128,7 +128,7 @@ exports.survey_take_get = asyncHandler(async (req, res, next) => {
 
 // Submit Survey take form on POST
 exports.survey_take_post = asyncHandler(async (req, res, next) => {
- const { id: publishedSurveyId } = req.params;  
+    const { id: publishedSurveyId } = req.params;  
     const answers = req.body.answers;
 
     const publishedSurvey = await PublishedSurvey.findById(publishedSurveyId)
@@ -145,6 +145,11 @@ exports.survey_take_post = asyncHandler(async (req, res, next) => {
     }));
 
     await Response.insertMany(responses);
+   
+    await PublishedSurvey.findByIdAndUpdate(
+            publishedSurveyId,
+            { $inc: { take_count: 1 } }, 
+    );
 
     res.redirect("/");
 });
@@ -153,11 +158,11 @@ exports.user_survey_list = asyncHandler(async (req, res, next) => {
     const userId = req.user.id;
 
     const saved_surveys = await Survey.find({ created_by: userId });
-const published_surveys = await PublishedSurvey.find()
-    .populate({
-        path: 'survey',
+    const published_surveys = await PublishedSurvey.find()
+        .populate({
+            path: 'survey',
         match: { created_by: userId },
-        select: 'title', // Only fetch the `title` field
+        select: 'title', 
     });
     
     const filteredPublishedSurveys = published_surveys.filter(survey => survey.survey !== null);
@@ -230,9 +235,11 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
     res.render("survey_published_detail", {
         title: `Analytics for ${survey.title}`,
         survey,
-        results,  // Pass the computed results for each question
+        results,  
         formattedPublishedAt,
         formattedExpiresAt,
+        takeCount: publishedSurvey.take_count, 
+
     });
 });
 
@@ -247,3 +254,69 @@ exports.survey_saved_detail = asyncHandler(async (req, res, next) => {
     moment: moment,
   });
 });
+
+exports.survey_edit_get = asyncHandler(async (req, res, next) => {
+    const survey = await Survey.findById(req.params.id).populate("questions").exec();
+
+    res.render("survey_edit_form", { survey });
+});
+
+exports.survey_edit_post = asyncHandler(async (req, res, next) => {
+    const { title, description, questions } = req.body;
+
+    const survey = await Survey.findById(req.params.id).exec();
+   
+    survey.title = title;
+    survey.description = description;
+
+    await Promise.all(
+        survey.questions.map(async (questionId) => {
+            await Question.findByIdAndDelete(questionId);
+        })
+    );
+
+    const questionDocs = await Promise.all(
+        questions.map(async (q) => {
+            let questionModel;
+            switch (q.questionType) {
+                case "multiple-choice":
+                    questionModel = new MultipleChoiceQuestion({
+                        survey: survey._id,
+                        questionText: q.questionText,
+                        questionType: q.questionType,
+                        options: q.options,
+                    });
+                    break;
+                case "rating":
+                    questionModel = new RatingQuestion({
+                        survey: survey._id,
+                        questionText: q.questionText,
+                        questionType: q.questionType,
+                        min: q.min,
+                        max: q.max,
+                    });
+                    break;
+                case "text":
+                default:
+                    questionModel = new TextQuestion({
+                        survey: survey._id,
+                        questionText: q.questionText,
+                        questionType: q.questionType,
+                        placeholder: q.placeholder || "",
+                    });
+                    break;
+            }
+
+            const savedQuestion = await questionModel.save();
+            return savedQuestion;
+        })
+    );
+
+    survey.questions = questionDocs.map((qDoc) => qDoc._id);
+
+    await survey.save();
+
+    res.redirect(`/home/my-surveys`);
+});
+
+

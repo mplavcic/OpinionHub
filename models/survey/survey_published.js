@@ -5,8 +5,8 @@ const Schema = mongoose.Schema;
 const PublishedSurveySchema = new Schema({
     survey: { type: Schema.Types.ObjectId, ref: "Survey", required: true },  // Reference to the Survey model
     published_at: { type: Date, required: true },
-    expires_at: { type: Date, required: true },
-    response_count: { type: Number, default: 0 },
+    expires_at: { type: Date, required: true ,index: { expires: 0 } },
+    take_count: { type: Number, default: 0 },
 }, { timestamps: true });
 
 // Virtual for published survey's URL

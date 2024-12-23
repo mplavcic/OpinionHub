@@ -29,6 +29,12 @@ router.get("/my-surveys/saved/:id", survey_controller.survey_saved_detail);
 // POST request to publish user's saved survey
 router.post("/my-surveys/saved/:id", survey_controller.survey_publish_post);
 
+// GET request to edit user's saved survey
+router.get("/my-surveys/saved/:id/edit", survey_controller.survey_edit_get);
+
+// POST request to edit user's saved survey
+router.post("/my-surveys/saved/:id/edit", survey_controller.survey_edit_post);
+
 // GET request to display details of the user's published survey
 router.get("/my-surveys/published/:id", survey_controller.survey_published_detail)
 

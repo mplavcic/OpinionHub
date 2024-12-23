@@ -9,3 +9,7 @@ a {
   color: #00B7FF;
 }
 
+.dragging {
+    opacity: 0.5;
+}
+

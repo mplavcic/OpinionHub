@@ -28,6 +28,9 @@ block content
           p Rating: #{question.options ? question.options.join(", ") : "1-5 scale"}
         else if question.questionType === "text"
           p Text answer
+  
+  // Edit Button
+  a(href=`/home/my-surveys/saved/${survey._id}/edit`, class="btn btn-warning mt-3") Edit Survey
 
   // Display Expiration Date
   h2 Expiration Date
