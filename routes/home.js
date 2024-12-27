@@ -35,6 +35,9 @@ router.get("/my-surveys/saved/:id/edit", survey_controller.survey_edit_get);
 // POST request to edit user's saved survey
 router.post("/my-surveys/saved/:id/edit", survey_controller.survey_edit_post);
 
+// POST request to delete a saved survey
+router.post("/my-surveys/saved/:id/delete", survey_controller.survey_delete);
+
 // GET request to display details of the user's published survey
 router.get("/my-surveys/published/:id", survey_controller.survey_published_detail)
 

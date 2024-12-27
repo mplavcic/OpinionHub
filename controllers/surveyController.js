@@ -319,4 +319,14 @@ exports.survey_edit_post = asyncHandler(async (req, res, next) => {
     res.redirect(`/home/my-surveys`);
 });
 
+exports.survey_delete = asyncHandler(async (req, res, next) => {
+    const surveyId = req.params.id;
+
+    await Survey.findByIdAndDelete(surveyId);
+
+    await Question.deleteMany({ survey: surveyId });
+
+    res.redirect('/home/my-surveys');
+});
+
 
