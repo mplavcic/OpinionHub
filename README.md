@@ -1,60 +1,58 @@
 # OpinionHub
 
-<img src="https://developer.mozilla.org/en-US/docs/Learn/Server-side/Express_Nodejs/routes/mvc_express.png" width="500" height="300" alt="Arhitektura">
+OpinionHub is a web application designed to simplify the creation, publication, and analysis of surveys. It allows users to design surveys with multiple question types, publish them for public access, collect responses, and view analytics.
 
-**Routes**:<br>
+## Features
 
- these should be avaliable without login
- /<br>
- /login<br> 
- /signup<br> 
- /surveys<br>
- /survey/:id<br>
- /survey/:id/take<br>
- 
- all protected routes start with /home<br>
- /home<br> 
- /home/logout<br> 
- /home/my_surveys<br> 
- /home/my-surveys/saved/:id<br>
- /home/my-surveys/published/:id<br>
- /home/my-surveys/create<br>
+- **Survey Creation**: Create surveys with multiple question types:
+  - Multiple-choice questions
+  - Rating questions
+  - Text questions
+- **Survey Management**:
+  - Save surveys as drafts
+  - Edit existing surveys
+  - Delete surveys
+- **Survey Publication**:
+  - Publish surveys with a customizable expiration date
+  - Share surveys via public URLs
+  - Generate QR codes for easy access
+- **Response Collection**:
+  - Respondents can take surveys via a public link
+  - Responses are saved and counted in real-time
+- **Analytics Dashboard**:
+  - View detailed survey results
+  - Analyze multiple-choice question statistics
+  - Calculate averages for rating questions
+  - Display text responses
 
-**Controllers**:<br>
- 
- index<br>
+---
 
- user_create_post<br>
- user_login_post<br>
- user_logout<br>
- 
- survey_list<br>
- survey_detail<br>
- survey_create_get<br>
- survey_create_post<br>
- survey_take_get<br>
- survey_take_post<br>
- user_survey_list<br>
- user_survey_detail<br>
+## Technology Stack
 
- **Views**:<br>
- 
- layout<br>
- layout_home<br>
+- **Backend**: Node.js, Express.js, Mongoose
+- **Frontend**: Pug (template engine)
+- **Database**: MongoDB (via MongoDB Atlas)
 
- index<br>
- login<br>
- signup<br>
- home<br>
+---
 
- survey_create<br>
- survey_detail<br>
- survey_list<br>
- survey_take<br>
- user_survey_detail<br>
- user_surveys<br>
+## Installation and Setup
 
- 
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/OpinionHub.git
+   cd OpinionHub
+   ```
 
-
-
+2. **Install dependecies**:
+   ```bash
+   npm install
+   ```
+3. Set up environment variables: Create a .env file in the root directory with the following keys:
+   ```bash
+   DATABASE_URL=mongodb+srv://<username>:<password>@cluster.mongodb.net/OpinionHub?retryWrites=true&w=majority
+   PORT=3000
+   ```
+4. Run the application
+   ```bash
+   npm run serverstart
+   ```
