@@ -8,6 +8,7 @@ const TextQuestion = require("../models/question/question_text");
 const Response = require("../models/response");
 const asyncHandler = require("express-async-handler");
 const moment = require("moment");
+const generateQRCode = require("../utils/qrcodeGenerator");
 
 // Display list of all PublishedSurveys.
 exports.survey_list = asyncHandler(async (req, res, next) => {
@@ -231,6 +232,10 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
 
     const formattedPublishedAt = moment(publishedSurvey.published_at).format("MMMM Do YYYY");
     const formattedExpiresAt = moment(publishedSurvey.expires_at).format("MMMM Do YYYY");
+    
+    // currently this is generating localhost:... which obviously doesnt work...
+    const surveyUrl = `${req.protocol}://${req.get("host")}/survey/${surveyId}`;
+    const qrCode = await generateQRCode(surveyUrl);
 
     res.render("survey_published_detail", {
         title: `Analytics for ${survey.title}`,
@@ -238,8 +243,8 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
         results,  
         formattedPublishedAt,
         formattedExpiresAt,
-        takeCount: publishedSurvey.take_count, 
-
+        takeCount: publishedSurvey.take_count,
+        qrCode,
     });
 });
 

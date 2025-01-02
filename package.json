@@ -22,6 +22,7 @@
     "mongoose": "^8.7.2",
     "morgan": "~1.9.1",
     "pug": "^3.0.3",
+    "qrcode": "^1.5.4",
     "tree-cli": "^0.6.7"
   },
   "devDependencies": {
