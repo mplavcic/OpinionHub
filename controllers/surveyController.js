@@ -9,6 +9,7 @@ const Response = require("../models/response");
 const asyncHandler = require("express-async-handler");
 const moment = require("moment");
 const generateQRCode = require("../utils/qrcodeGenerator");
+const Sentiment = require("sentiment");
 
 // Display list of all PublishedSurveys.
 exports.survey_list = asyncHandler(async (req, res, next) => {
@@ -178,6 +179,8 @@ exports.user_survey_list = asyncHandler(async (req, res, next) => {
 
 exports.survey_published_detail = asyncHandler(async (req, res, next) => {
     const surveyId = req.params.id;
+    // TODO: maybe better to init outside the function
+    const sentiment = new Sentiment();
 
     const publishedSurvey = await PublishedSurvey.findById(surveyId)
         .populate({
@@ -193,6 +196,8 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
     const responses = await Response.find({ publishedSurvey: surveyId });
 
     const results = [];
+    
+    let positiveCount = 0, neutralCount = 0, negativeCount = 0;
 
     for (const question of survey.questions) {
         const questionResponses = responses.filter(
@@ -223,8 +228,18 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
             result.average = avg;
         } else if (question.questionType === "text") {
             const texts = questionResponses.map((response) => response.responseValue);
+
+            texts.forEach((text) => {
+                const analysis = sentiment.analyze(text);
+                if (analysis.score > 0) positiveCount++;
+                else if (analysis.score < 0) negativeCount++;
+                else neutralCount++;
+            });
+
             result.type = "text";
-            result.responses = texts;
+            result.positiveCount = positiveCount;
+            result.neutralCount = neutralCount;
+            result.negativeCount = negativeCount;    
         }
 
         results.push(result);
@@ -245,6 +260,11 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
         formattedExpiresAt,
         takeCount: publishedSurvey.take_count,
         qrCode,
+        sentimentCounts: {
+            positive: positiveCount,
+            negative: negativeCount,
+            neutral: neutralCount,
+        },
     });
 });
 

@@ -29,7 +29,8 @@ block content
         else if result.type === 'rating'
           p Average Rating: #{result.average}
         else if result.type === 'text'
-          p Text Responses:
-          ul
-            each text in result.responses
-              li(class="list-group-item")= text
+          p Text Responses Summary:
+          ul(class="list-group")
+            li(class="list-group-item") Positive Responses: #{result.positiveCount}
+            li(class="list-group-item") Neutral Responses: #{result.neutralCount}
+            li(class="list-group-item") Negative Responses: #{result.negativeCount}
