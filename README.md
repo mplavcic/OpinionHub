@@ -39,7 +39,7 @@ OpinionHub is a web application designed to simplify the creation, publication, 
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/OpinionHub.git
+   git clone https://github.com/mplavcic/OpinionHub.git
    cd OpinionHub
    ```
 
