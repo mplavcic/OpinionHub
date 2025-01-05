@@ -100,78 +100,6 @@ describe("Survey Create POST", () => {
     });
 });
 
-it("should save responses when survey is submitted for a published survey", async () => {
-    const mockToken = jwt.sign({ _id: mockUserId }, process.env.JWT_SECRET || "default_jwt_secret");
-
-    const survey = new Survey({
-        title: "Customer Feedback Survey",
-        description: "Survey to gather feedback",
-        created_by: mockUserId,
-    });
-    await survey.save();
-
-    const question1 = new Question({
-        survey: survey._id,
-        questionText: "What is your favorite color?",
-        questionType: "multiple-choice",
-        options: ["Red", "Blue", "Green"],
-    });
-    await question1.save();
-
-    const question2 = new Question({
-        survey: survey._id,
-        questionText: "Rate your experience from 1 to 5.",
-        questionType: "rating",
-    });
-    await question2.save();
-
-    const question3 = new Question({
-        survey: survey._id,
-        questionText: "Any additional comments?",
-        questionType: "text",
-    });
-    await question3.save();
-
-    survey.questions.push(question1, question2, question3);
-    await survey.save();
-
-    const publishedSurvey = new PublishedSurvey({
-        survey: survey._id,
-        published_at: new Date(),
-        expires_at: new Date(Date.now() + 10000000), 
-    });
-    await publishedSurvey.save();
-
-    const reqBody = {
-        answers: {
-            [question1._id]: "Red",         
-            [question2._id]: 5,             
-            [question3._id]: "Great service", 
-        },
-    };
-
-    const response = await request(app)
-        .post(`/survey/${publishedSurvey._id}/take`) 
-        .set("Content-Type", "application/json")
-        .set("Cookie", [`OpinionHub_token=${mockToken}`])
-        .send(reqBody);
-
-    expect(response.statusCode).toBe(302);
-    expect(response.headers.location).toBe("/");
-
-    const savedResponses = await Response.find({ survey: survey._id }).populate("question");
-    expect(savedResponses).toHaveLength(3);
-
-    const response1 = savedResponses.find((r) => r.question._id.toString() === question1._id.toString());
-    expect(response1.responseValue).toBe("Red");
-
-    const response2 = savedResponses.find((r) => r.question._id.toString() === question2._id.toString());
-    expect(response2.responseValue).toBe(5);
-
-    const response3 = savedResponses.find((r) => r.question._id.toString() === question3._id.toString());
-    expect(response3.responseValue).toBe("Great service");
-});
-
 describe("Survey Edit POST", () => {
     it("should edit a survey's details and update its questions", async () => {
         const mockToken = jwt.sign({ _id: mockUserId }, process.env.JWT_SECRET || "default_jwt_secret");
@@ -249,48 +177,126 @@ describe("Survey Edit POST", () => {
     });
 });
 
-it("should delete a survey and its associated questions", async () => {
-    const mockToken = jwt.sign({ _id: mockUserId }, process.env.JWT_SECRET || "default_jwt_secret");
 
-    const survey = new Survey({
-        title: "Survey to be deleted",
-        description: "This survey will be deleted in the test.",
-        created_by: mockUserId,
+describe("Save responses", () => {
+    it("should save responses when survey is submitted for a published survey", async () => {
+        const mockToken = jwt.sign({ _id: mockUserId }, process.env.JWT_SECRET || "default_jwt_secret");
+
+        const survey = new Survey({
+            title: "Customer Feedback Survey",
+            description: "Survey to gather feedback",
+            created_by: mockUserId,
+        });
+        await survey.save();
+
+        const question1 = new Question({
+            survey: survey._id,
+            questionText: "What is your favorite color?",
+            questionType: "multiple-choice",
+            options: ["Red", "Blue", "Green"],
+        });
+        await question1.save();
+
+        const question2 = new Question({
+            survey: survey._id,
+            questionText: "Rate your experience from 1 to 5.",
+            questionType: "rating",
+        });
+        await question2.save();
+
+        const question3 = new Question({
+            survey: survey._id,
+            questionText: "Any additional comments?",
+            questionType: "text",
+        });
+        await question3.save();
+
+        survey.questions.push(question1, question2, question3);
+        await survey.save();
+
+        const publishedSurvey = new PublishedSurvey({
+            survey: survey._id,
+            published_at: new Date(),
+            expires_at: new Date(Date.now() + 10000000), 
+        });
+        await publishedSurvey.save();
+
+        const reqBody = {
+            answers: {
+                [question1._id]: "Red",         
+                [question2._id]: 5,             
+                [question3._id]: "Great service", 
+            },
+        };
+
+        const response = await request(app)
+            .post(`/survey/${publishedSurvey._id}/take`) 
+            .set("Content-Type", "application/json")
+            .set("Cookie", [`OpinionHub_token=${mockToken}`])
+            .send(reqBody);
+
+        expect(response.statusCode).toBe(302);
+        expect(response.headers.location).toBe("/");
+
+        const savedResponses = await Response.find({ survey: survey._id }).populate("question");
+        expect(savedResponses).toHaveLength(3);
+
+        const response1 = savedResponses.find((r) => r.question._id.toString() === question1._id.toString());
+        expect(response1.responseValue).toBe("Red");
+
+        const response2 = savedResponses.find((r) => r.question._id.toString() === question2._id.toString());
+        expect(response2.responseValue).toBe(5);
+
+        const response3 = savedResponses.find((r) => r.question._id.toString() === question3._id.toString());
+        expect(response3.responseValue).toBe("Great service");
     });
-    await survey.save();
-
-    const question1 = new Question({
-        survey: survey._id,
-        questionText: "Question 1?",
-        questionType: "text",
-    });
-    const question2 = new Question({
-        survey: survey._id,
-        questionText: "Question 2?",
-        questionType: "multiple-choice",
-        options: ["Option A", "Option B"],
-    });
-    await question1.save();
-    await question2.save();
-
-    survey.questions.push(question1._id, question2._id);
-    await survey.save();
-
-    const savedSurvey = await Survey.findById(survey._id);
-    const savedQuestions = await Question.find({ survey: survey._id });
-    expect(savedSurvey).toBeDefined();
-    expect(savedQuestions).toHaveLength(2);
-
-    const response = await request(app)
-        .post(`/home/my-surveys/${survey._id}/delete`) 
-        .set("Cookie", [`OpinionHub_token=${mockToken}`]);
-
-    expect(response.statusCode).toBe(302);
-    expect(response.headers.location).toBe("/home/my-surveys");
-
-    const deletedSurvey = await Survey.findById(survey._id);
-    const deletedQuestions = await Question.find({ survey: survey._id });
-    expect(deletedSurvey).toBeNull();
-    expect(deletedQuestions).toHaveLength(0);
 });
+
+describe("Delete survey", () => {
+    it("should delete a survey and its associated questions", async () => {
+        const mockToken = jwt.sign({ _id: mockUserId }, process.env.JWT_SECRET || "default_jwt_secret");
+
+        const survey = new Survey({
+            title: "Survey to be deleted",
+            description: "This survey will be deleted in the test.",
+            created_by: mockUserId,
+        });
+        await survey.save();
+
+        const question1 = new Question({
+            survey: survey._id,
+            questionText: "Question 1?",
+            questionType: "text",
+        });
+        const question2 = new Question({
+            survey: survey._id,
+            questionText: "Question 2?",
+            questionType: "multiple-choice",
+            options: ["Option A", "Option B"],
+        });
+        await question1.save();
+        await question2.save();
+
+        survey.questions.push(question1._id, question2._id);
+        await survey.save();
+
+        const savedSurvey = await Survey.findById(survey._id);
+        const savedQuestions = await Question.find({ survey: survey._id });
+        expect(savedSurvey).toBeDefined();
+        expect(savedQuestions).toHaveLength(2);
+
+        const response = await request(app)
+            .post(`/home/my-surveys/${survey._id}/delete`) 
+            .set("Cookie", [`OpinionHub_token=${mockToken}`]);
+
+        expect(response.statusCode).toBe(302);
+        expect(response.headers.location).toBe("/home/my-surveys");
+
+        const deletedSurvey = await Survey.findById(survey._id);
+        const deletedQuestions = await Question.find({ survey: survey._id });
+        expect(deletedSurvey).toBeNull();
+        expect(deletedQuestions).toHaveLength(0);
+    });
+});
+
 

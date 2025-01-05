@@ -10,12 +10,20 @@ const asyncHandler = require("express-async-handler");
 const moment = require("moment");
 const generateQRCode = require("../utils/qrcodeGenerator");
 const Sentiment = require("sentiment");
+const sanitizeHtml = require("sanitize-html");
+
+const sanitizePlainText = (input) => {
+    return sanitizeHtml(input, {
+        allowedTags: [],  // Don't allow any tags
+        allowedAttributes: {}, // Don't allow any attributes
+        disallowedTagsMode: 'escape', // Escape any remaining tags
+    });
+}
 
 // Display list of all PublishedSurveys.
 exports.survey_list = asyncHandler(async (req, res, next) => {
     
     const publishedSurveys = await PublishedSurvey.find();
-    console.log("Published Surveys:", publishedSurveys); // Check if data is fetched
 
     res.render("survey_list", { title: "Survey list", survey_list: publishedSurveys });
 });
@@ -37,14 +45,88 @@ exports.survey_detail = asyncHandler(async (req, res, next) => {
 exports.survey_create_get = asyncHandler(async (req, res, next) => {
     res.render("survey_create");
 });
-
-// Handle Survey create on POST.
 exports.survey_create_post = asyncHandler(async (req, res, next) => {
     const { title, description, questions } = req.body;
 
+    // Ensure that options is always an array
+    const sanitizedQuestions = questions
+        ? questions.map((q) => ({
+              questionText: sanitizePlainText(q.questionText || ""),
+              questionType: sanitizePlainText(q.questionType || ""),
+              options: q.options
+                  ? q.options.map((opt) => sanitizePlainText(opt || "")).filter((opt) => opt.trim() !== "")
+                  : [], // Ensure options is always an array
+          }))
+        : [];
+
+    // Validate title
+    if (!title || typeof title !== "string" || title.trim().length === 0) {
+        return res.render("survey_create", {
+            error: "Invalid survey title.",
+            title: sanitizePlainText(title || ""),
+            description: sanitizePlainText(description || ""),
+            questions: sanitizedQuestions,
+        });
+    }
+
+    // Validate description
+    if (!description || typeof description !== "string" || description.trim().length === 0) {
+        return res.render("survey_create", {
+            error: "Invalid survey description.",
+            title: sanitizePlainText(title || ""),
+            description: sanitizePlainText(description || ""),
+            questions: sanitizedQuestions,
+        });
+    }
+
+    // Validate questions
+    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+        return res.render("survey_create", {
+            error: "At least one question is required.",
+            title: sanitizePlainText(title || ""),
+            description: sanitizePlainText(description || ""),
+            questions: sanitizedQuestions,
+        });
+    }
+
+    // Validate individual questions
+    for (let i = 0; i < sanitizedQuestions.length; i++) {
+        const question = sanitizedQuestions[i];
+        
+        // Validate question type
+        const validQuestionTypes = ["text", "multiple-choice", "rating"];
+        if (!validQuestionTypes.includes(question.questionType)) {
+            return res.render("survey_create", {
+                error: `Invalid question type in Question ${i + 1}.`,
+                title: sanitizePlainText(title || ""),
+                description: sanitizePlainText(description || ""),
+                questions: sanitizedQuestions,
+            });
+        }
+
+        if (!question.questionText || question.questionText.trim().length === 0) {
+            return res.render("survey_create", {
+                error: `Question ${i + 1} is missing text.`,
+                title: sanitizePlainText(title || ""),
+                description: sanitizePlainText(description || ""),
+                questions: sanitizedQuestions,
+            });
+        }
+
+        if (question.questionType === "multiple-choice" && (!question.options || question.options.length === 0)) {
+            return res.render("survey_create", {
+                error: `Question ${i + 1} requires at least one non-empty option. Please delete the question and create new one`,
+                title: sanitizePlainText(title || ""),
+                description: sanitizePlainText(description || ""),
+                questions: sanitizedQuestions,
+            });
+        }
+    }
+
+    // Create the survey object and save to the database
     const newSurvey = new Survey({
-        title,
-        description,
+        title: sanitizePlainText(title),
+        description: sanitizePlainText(description),
         created_by: new mongoose.Types.ObjectId(req.user.id),
     });
 
@@ -57,16 +139,16 @@ exports.survey_create_post = asyncHandler(async (req, res, next) => {
                 case "multiple-choice":
                     questionModel = new MultipleChoiceQuestion({
                         survey: savedSurvey._id,
-                        questionText: q.questionText,
-                        questionType: q.questionType,
-                        options: q.options,
+                        questionText: sanitizePlainText(q.questionText),
+                        questionType: sanitizePlainText(q.questionType),
+                        options: q.options ? q.options.map((opt) => sanitizePlainText(opt)) : [],
                     });
                     break;
                 case "rating":
                     questionModel = new RatingQuestion({
-                        survey: savedSurvey._id, 
-                        questionText: q.questionText,
-                        questionType: q.questionType,
+                        survey: savedSurvey._id,
+                        questionText: sanitizePlainText(q.questionText),
+                        questionType: sanitizePlainText(q.questionType),
                         min: q.min,
                         max: q.max,
                     });
@@ -74,16 +156,16 @@ exports.survey_create_post = asyncHandler(async (req, res, next) => {
                 case "text":
                 default:
                     questionModel = new TextQuestion({
-                        survey: savedSurvey._id, 
-                        questionText: q.questionText,
-                        questionType: q.questionType,
-                        placeholder: q.placeholder || "",
+                        survey: savedSurvey._id,
+                        questionText: sanitizePlainText(q.questionText),
+                        questionType: sanitizePlainText(q.questionType),
+                        placeholder: sanitizePlainText(q.placeholder || ""),
                     });
                     break;
             }
 
             const savedQuestion = await questionModel.save();
-            return savedQuestion; 
+            return savedQuestion;
         })
     );
 

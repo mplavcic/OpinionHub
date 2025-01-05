@@ -9,9 +9,10 @@ const MultipleChoiceSchema = new Schema({
         required: function() { return this.questionType === "multiple-choice"; },
         validate: {
             validator: function(v) {
-                return v && v.length > 0;
+                return this.questionType !== "multiple-choice" || (Array.isArray(v) && v.length > 0 && v.every(opt => opt.trim().length > 0));
+
             },
-            message: "Options are required for multiple-choice questions."
+            message: "At least one non-empty option is required for multiple-choice questions."
         }
     }
 });

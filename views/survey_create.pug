@@ -8,19 +8,53 @@ html
     body(class="container mt-4")
         h1 Create a new survey
 
+        if error
+            .alert.alert-danger= error
+
         // Survey creation form
         form(action="/home/my-surveys/create", method="POST")
             div(class="mb-4")
                 label(for="title", class="form-label") Title:
-                input(type="text", name="title", id="title", class="form-control", required, placeholder="Enter survey title")
+                input(type="text" name="title", id="title", class="form-control", placeholder="Enter survey title", value=title || "")
 
             div(class="mb-4")
                 label(for="description", class="form-label") Description:
-                textarea(name="description", id="description", class="form-control", rows="4", placeholder="Enter survey description")
+                textarea(name="description", id="description", class="form-control", required, rows="4", placeholder="Enter survey description") #{description || ""}
 
             // Container for questions
             div(id="questions-container", class="mb-4")
                 h2 Questions
+
+                // Render saved questions if they exist
+                if questions && questions.length > 0
+                    each question, index in questions
+                        .question(data-question-id="question-" + index class="mb-3 border p-3" draggable="true")
+                            label(for="questionText" + index, class="form-label") Question:
+                            input(type="text" name="questions[" + index + "][questionText]" id="questionText" + index class="form-control mb-2" value=question.questionText required)
+
+                            label(for="questionType-" + index, class="form-label") Type:
+                            select(name="questions[" + index + "][questionType]" id="questionType-" + index class="form-select mb-2" onchange="toggleOptions(this, #{index})")
+                                option(value="text", selected=question.questionType === "text") Text
+                                option(value="multiple-choice", selected=question.questionType === "multiple-choice") Multiple Choice
+                                option(value="rating", selected=question.questionType === "rating") Rating
+
+                            // Show options if multiple-choice is selected
+                            if question.questionType === "multiple-choice"
+                                div(id="options-" + index class="options-container mb-2")
+                                    label Options:
+                                    each option, optionIndex in question.options
+                                        div(class="option-container")
+                                            input(type="text" name="questions[" + index + "][options][" + optionIndex + "]" class="form-control mb-2" value=option placeholder="Enter an option")
+
+                                    // Add button to add more options
+                                    button(type="button" class="btn btn-secondary btn-sm mt-2" onclick="addOption(#{index})") Add Option
+                            else
+                                // Hidden button for non-multiple-choice questions
+                                button(type="button" class="btn btn-secondary btn-sm mt-2" onclick="addOption(#{index})" style="display:none;") Add Option
+
+                            button(type="button" class="btn btn-danger btn-sm mt-2" onclick="removeQuestion(#{index})") X
+
+            div
                 button(type="button", class="btn btn-secondary mb-3", onclick="addQuestion()") Add Question
 
             button(type="submit", class="btn btn-primary mt-3") Create Survey

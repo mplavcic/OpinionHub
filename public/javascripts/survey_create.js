@@ -1,104 +1,135 @@
-function addQuestion() {
-    const questionContainer = document.createElement("div");
-    questionContainer.className = "question mb-3 border p-3";
-    questionContainer.draggable = true; // Make the question draggable
-    questionContainer.setAttribute("data-question-id", `question-${document.querySelectorAll(".question").length}`);
-    questionContainer.addEventListener("dragstart", handleDragStart);
-    questionContainer.addEventListener("dragover", handleDragOver);
-    questionContainer.addEventListener("drop", handleDrop);
-
-    const questionCount = document.querySelectorAll(".question").length;
-    const questionId = `question-${questionCount}`;
-
-    questionContainer.innerHTML = `
-        <label for="${questionId}" class="form-label">Question:</label>
-        <input type="text" name="questions[${questionCount}][questionText]" id="${questionId}" class="form-control mb-2" placeholder="Enter question" required>
-
-        <label for="${questionId}-type" class="form-label">Type:</label>
-        <select name="questions[${questionCount}][questionType]" id="${questionId}-type" class="form-select mb-2" onchange="toggleOptions(this, ${questionCount})">
-            <option value="text">Text</option>
-            <option value="multiple-choice">Multiple Choice</option>
-            <option value="rating">Rating</option>
-        </select>
-
-        <div id="options-${questionCount}" class="options-container mb-2" style="display:none;">
-            <label class="form-label">Options:</label>
-            <div class="options">
-                <!-- Option inputs will only be added here if 'multiple-choice' is selected -->
-            </div>
-            <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="addOption(${questionCount})" style="display:none;">Add Option</button>
-        </div>
-
-        <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeQuestion(this)">X</button>
-    `;
-
-    document.getElementById("questions-container").appendChild(questionContainer);
-}
-
-function toggleOptions(select, questionIndex) {
+// Add a new option for a specific question
+function addOption(questionIndex) {
     const optionsContainer = document.getElementById(`options-${questionIndex}`);
-    const addOptionButton = optionsContainer.querySelector("button");
 
-    if (select.value === "multiple-choice") {
-        optionsContainer.style.display = "block";
-        addOptionButton.style.display = "inline";
-    } else {
-        optionsContainer.style.display = "none";
-        addOptionButton.style.display = "none";
+    // Only count the actual option input elements, not the button
+    const existingOptions = optionsContainer.querySelectorAll('.option-container');
+    const optionIndex = existingOptions.length;  // This ensures we are counting only options and not the button
 
-        const optionsDiv = optionsContainer.querySelector(".options");
-        optionsDiv.innerHTML = ''; // Clear all option inputs
+    // Check if the option already exists, to avoid adding duplicates
+    if (existingOptions.length === optionIndex) {
+        const newOptionHTML = `
+            <div class="option-container">
+                <input type="text" name="questions[${questionIndex}][options][${optionIndex}]" class="form-control mb-2" placeholder="Enter an option">
+            </div>
+        `;
+        optionsContainer.insertAdjacentHTML("beforeend", newOptionHTML);
     }
 }
 
-function addOption(questionIndex) {
-    const optionsDiv = document.querySelector(`#options-${questionIndex} .options`);
-    const input = document.createElement("input");
-    input.type = "text";
-    input.name = `questions[${questionIndex}][options][]`;
-    input.className = "form-control mb-2";
-    input.placeholder = "Enter an option";
-    optionsDiv.appendChild(input);
+// Add a new question dynamically
+function addQuestion() {
+    const questionsContainer = document.getElementById("questions-container");
+    const questionIndex = questionsContainer.children.length;
+    const newQuestionHTML = `
+        <div class="question mb-3 border p-3" data-question-id="question-${questionIndex}" draggable="true" ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="drop(event)" ondragend="dragEnd(event)">
+            <label for="questionText-${questionIndex}" class="form-label">Question:</label>
+            <input type="text" name="questions[${questionIndex}][questionText]" id="questionText-${questionIndex}" class="form-control mb-2" required>
+
+            <label for="questionType-${questionIndex}" class="form-label">Type:</label>
+            <select name="questions[${questionIndex}][questionType]" id="questionType-${questionIndex}" class="form-select mb-2" onchange="toggleOptions(this, ${questionIndex})">
+                <option value="text">Text</option>
+                <option value="multiple-choice">Multiple Choice</option>
+                <option value="rating">Rating</option>
+            </select>
+
+            <div id="options-${questionIndex}" class="options-container mb-2" style="display:none;">
+                <label>Options:</label>
+                <button type="button" class="btn btn-secondary btn-sm mt-2" onclick="addOption(${questionIndex})">Add Option</button>
+            </div>
+
+            <button type="button" class="btn btn-danger btn-sm mt-2" onclick="removeQuestion(${questionIndex})">X</button>
+        </div>
+    `;
+    questionsContainer.insertAdjacentHTML("beforeend", newQuestionHTML);
+    reattachEventListeners();  // Reattach event listeners for new question
 }
 
-function removeQuestion(button) {
-    const questionContainer = button.parentElement;
-    questionContainer.remove();
+// Remove a question
+function removeQuestion(questionIndex) {
+    const question = document.querySelector(`[data-question-id="question-${questionIndex}"]`);
+    question.remove();
 }
 
-// Drag and Drop Handlers
-let draggedElement = null;
-
-function handleDragStart(event) {
-    draggedElement = event.currentTarget;
-    event.dataTransfer.effectAllowed = "move";
-    event.dataTransfer.setData("text/plain", draggedElement.getAttribute("data-question-id"));
-    draggedElement.classList.add("dragging");
+// Show or hide options for multiple choice
+function toggleOptions(selectElement, questionIndex) {
+    const optionsContainer = document.getElementById(`options-${questionIndex}`);
+    if (selectElement.value === "multiple-choice") {
+        optionsContainer.style.display = "block";
+    } else {
+        optionsContainer.style.display = "none";
+    }
 }
 
-function handleDragOver(event) {
+// Re-attach event listeners after dynamic content is added or re-rendered
+function reattachEventListeners() {
+    // Reattach event listeners for the "Remove Question" buttons
+    document.querySelectorAll('.btn-danger').forEach((btn) => {
+        btn.removeEventListener('click', handleRemoveQuestion);  // Clean up previous listeners
+        btn.addEventListener('click', handleRemoveQuestion);  // Reattach listener
+    });
+}
+
+// Handle removing a question
+function handleRemoveQuestion(event) {
+    const questionIndex = event.target.closest('.question').dataset.questionId.split('-')[1];
+    removeQuestion(questionIndex);
+}
+
+// Initialize event listeners for dynamic content after the DOM has loaded
+document.addEventListener("DOMContentLoaded", function () {
+    reattachEventListeners();  // Reattach event listeners when the page loads
+
+    // Initialize existing questions options visibility based on question type
+    document.querySelectorAll('select[id^="questionType-"]').forEach((select, index) => {
+        toggleOptions(select, index);
+    });
+});
+
+// --- Drag and Drop functionality ---
+
+// Store the dragged element
+let draggedQuestion = null;
+
+// When drag starts, store the element
+function dragStart(event) {
+    draggedQuestion = event.target;
+    event.target.style.opacity = 0.5; // Optional: make the dragged element transparent
+}
+
+// When drag ends, reset the opacity
+function dragEnd(event) {
+    event.target.style.opacity = ""; // Reset the opacity of the element
+    draggedQuestion = null;
+}
+
+// When dragging over a potential drop target, allow the drop
+function dragOver(event) {
     event.preventDefault(); // Allow the drop
-    event.dataTransfer.dropEffect = "move";
 }
 
-function handleDrop(event) {
+// When a question is dropped, reorder the questions
+function drop(event) {
     event.preventDefault();
-    const target = event.currentTarget;
+    const target = event.target;
 
-    // Ensure the dragged element is dropped only on other question containers
-    if (draggedElement !== target) {
-        const container = document.getElementById("questions-container");
-        const draggedIndex = Array.from(container.children).indexOf(draggedElement);
-        const targetIndex = Array.from(container.children).indexOf(target);
+    // Only allow the drop on the question container, not on the remove button or other buttons
+    if (!target.classList.contains("question") || target === draggedQuestion) return;
 
-        if (draggedIndex > targetIndex) {
-            container.insertBefore(draggedElement, target);
+    // Reorder the questions: move the dragged question before or after the target
+    const questionsContainer = document.getElementById("questions-container");
+
+    if (target && draggedQuestion) {
+        const draggedIndex = [...questionsContainer.children].indexOf(draggedQuestion);
+        const targetIndex = [...questionsContainer.children].indexOf(target);
+
+        if (draggedIndex < targetIndex) {
+            questionsContainer.insertBefore(draggedQuestion, target.nextSibling);
         } else {
-            container.insertBefore(draggedElement, target.nextSibling);
+            questionsContainer.insertBefore(draggedQuestion, target);
         }
     }
 
-    draggedElement.classList.remove("dragging");
-    draggedElement = null;
+    target.style.border = ""; // Reset the border style
 }
 

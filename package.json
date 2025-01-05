@@ -23,6 +23,7 @@
     "morgan": "~1.9.1",
     "pug": "^3.0.3",
     "qrcode": "^1.5.4",
+    "sanitize-html": "^2.14.0",
     "sentiment": "^5.0.2",
     "tree-cli": "^0.6.7"
   },
