@@ -261,6 +261,7 @@ exports.user_survey_list = asyncHandler(async (req, res, next) => {
 
 exports.survey_published_detail = asyncHandler(async (req, res, next) => {
     const surveyId = req.params.id;
+    
     // TODO: maybe better to init outside the function
     const sentiment = new Sentiment();
 
@@ -279,8 +280,6 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
 
     const results = [];
     
-    let positiveCount = 0, neutralCount = 0, negativeCount = 0;
-
     for (const question of survey.questions) {
         const questionResponses = responses.filter(
             (response) => response.question.toString() === question._id.toString()
@@ -310,6 +309,10 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
             result.average = avg;
         } else if (question.questionType === "text") {
             const texts = questionResponses.map((response) => response.responseValue);
+            
+            let positiveCount = 0;
+            let neutralCount = 0; 
+            let negativeCount = 0;
 
             texts.forEach((text) => {
                 const analysis = sentiment.analyze(text);
@@ -330,7 +333,7 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
     const formattedPublishedAt = moment(publishedSurvey.published_at).format("MMMM Do YYYY");
     const formattedExpiresAt = moment(publishedSurvey.expires_at).format("MMMM Do YYYY");
     
-    // currently this is generating localhost:... which obviously doesnt work...
+    // TODO: currently this is generating localhost:... which obviously doesnt work...
     const surveyUrl = `${req.protocol}://${req.get("host")}/survey/${surveyId}`;
     const qrCode = await generateQRCode(surveyUrl);
 
@@ -342,11 +345,6 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
         formattedExpiresAt,
         takeCount: publishedSurvey.take_count,
         qrCode,
-        sentimentCounts: {
-            positive: positiveCount,
-            negative: negativeCount,
-            neutral: neutralCount,
-        },
     });
 });
 
