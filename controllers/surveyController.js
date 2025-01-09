@@ -45,6 +45,7 @@ exports.survey_detail = asyncHandler(async (req, res, next) => {
 exports.survey_create_get = asyncHandler(async (req, res, next) => {
     res.render("survey_create");
 });
+
 exports.survey_create_post = asyncHandler(async (req, res, next) => {
     const { title, description, questions } = req.body;
 
