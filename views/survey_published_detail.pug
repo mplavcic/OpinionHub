@@ -1,36 +1,54 @@
 extends layout_home
 
 block content
-  h1= title
+  h1.text-center.mb-5= title
 
-  .survey-details
-    h2 Survey Details
+  .survey-details.card.shadow-sm.p-4.bg-light
+    h2.text-center.mb-3 Survey Details
     p(class="fw-bold") Title: #{survey.title}
     p Description: #{survey.description}
     p Published On: #{formattedPublishedAt}
     p Expires On: #{formattedExpiresAt}
-    p Number of takes: #{takeCount} 
- 
-  h2 QR Code for this Survey
-  img(src=qrCode alt="QR Code for Survey")
+    p Number of Takes: #{takeCount}
 
-  .analytics
-    h2 Analytics
+  .qr-code-section.text-center.mt-5
+    h2.QR Code for this Survey
+    img(src=qrCode, alt="QR Code for Survey", class="img-fluid rounded border")
+
+  .analytics.mt-5
+    h2.text-center.mb-4 Analytics
 
     each result in results
-      .question(class="mb-4")
-        h3= result.questionText
-        if result.type === 'multiple-choice'
-          ul(class="list-group")
-            each option, count in result.counts
-              li(class="list-group-item")
-                strong= option
-                span= " - " + count + " response(s)"
-        else if result.type === 'rating'
-          p Average Rating: #{result.average}
-        else if result.type === 'text'
-          p Text Responses Summary:
-          ul(class="list-group")
-            li(class="list-group-item") Positive Responses: #{result.positiveCount}
-            li(class="list-group-item") Neutral Responses: #{result.neutralCount}
-            li(class="list-group-item") Negative Responses: #{result.negativeCount}
+      .question.card.mb-4
+        .card-body
+          h3.card-title= result.questionText
+          if result.type === 'multiple-choice'
+            ul(class="list-group")
+              each option, count in result.counts
+                li(class="list-group-item d-flex justify-content-between")
+                  strong= option
+                  span= count + " response(s)"
+          else if result.type === 'rating'
+            p Average Rating: #{result.average.toFixed(2)} 
+          else if result.type === 'text'
+            p Text Responses Summary:
+            ul(class="list-group")
+              li(class="list-group-item") Positive Responses: #{result.positiveCount}
+              li(class="list-group-item") Neutral Responses: #{result.neutralCount}
+              li(class="list-group-item") Negative Responses: #{result.negativeCount}
+
+  style.
+    .survey-details {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .qr-code-section img {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    .analytics .question {
+      max-width: 800px;
+      margin: 0 auto;
+    }

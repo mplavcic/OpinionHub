@@ -1,11 +1,14 @@
 extends layout
 
 block content
-  h1= title
+  .container.mt-5
+    .row.justify-content-center
+      .col-md-8.col-lg-6
+        h1.text-center.mb-4.font-weight-bold.text-shadow-sm= title 
 
-  p Description: #{survey.survey.description}
-  p Expires At: #{formattedExpiresAt}
-
-  // Add Take Survey Button
-  form(action=`/survey/${survey._id}/take`, method="get")
-    button.btn.btn-primary(type="submit") Take Survey
+        .card.shadow-sm.p-4.bg-light
+          .card-body.d-flex.flex-column.align-items-center
+            p.text-muted Description: #{survey.survey.description}
+            p.text-muted.mt-3 Expires At: #{formattedExpiresAt}
+            form(action=`/survey/${survey._id}/take`, method="get")
+              button.btn.btn-lg.btn-primary.mt-3(type="submit") Take Survey
