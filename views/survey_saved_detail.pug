@@ -1,56 +1,68 @@
 extends layout_home
 
 block content
-  h1 Survey Details
+  h1.text-center.mb-4 Survey Details
 
   // Display Survey Title
-  h2 Title
-  p(class="fw-bold")= survey.title
+  div(class="mb-3")
+    h2(class="fw-bold") Title
+    p(class="fs-5")= survey.title
 
   // Display Survey Description
-  h2 Description
-  p= survey.description
+  div(class="mb-3")
+    h2(class="fw-bold") Description
+    p(class="fs-6")= survey.description
 
   // Display Survey Questions
-  h2 Questions
-  ul(id="question-list", class="list-group")
-    each question, index in survey.questions
-      li(class="list-group-item")
-        p Question #{index + 1}: #{question.questionText}
+  div(class="card mb-4")
+    div(class="card-header bg-secondary text-white")
+      h2(class="m-0") Questions
+    div(class="card-body")
+      ul(id="question-list", class="list-group list-group-flush")
+        each question, index in survey.questions
+          li(class="list-group-item border-0")
+            p(class="fw-bold") Question #{index + 1}: #{question.questionText}
 
-        // Display options if the question is of type "multiple-choice"
-        if question.questionType === "multiple-choice"
-          ul(class="list-group list-group-flush")
-            each option in question.options
-              li(class="list-group-item") 
-                p= option
-        else if question.questionType === "rating"
-          p Rating: #{question.options ? question.options.join(", ") : "1-5 scale"}
-        else if question.questionType === "text"
-          p Text answer
-  
+            // Display options if the question is of type "multiple-choice"
+            if question.questionType === "multiple-choice"
+              ul(class="list-group list-group-flush")
+                each option in question.options
+                  li(class="list-group-item") 
+                    p= option
+            else if question.questionType === "rating"
+              p(class="text-muted") Rating: #{question.options ? question.options.join(", ") : "1-5 scale"}
+            else if question.questionType === "text"
+              p(class="text-muted") Text answer
+
   // Edit Button
-  a(href=`/home/my-surveys/saved/${survey._id}/edit`, class="btn btn-warning mt-3") Edit Survey
+  div(class="d-flex justify-content-start mt-3 mb-3")
+    a(href=`/home/my-surveys/saved/${survey._id}/edit`, class="btn btn-warning me-2") Edit Survey
 
   // Delete Button
-  form(action=`/home/my-surveys/saved/${survey._id}/delete`, method="POST", class="mt-3")
-    button(type="submit", class="btn btn-warning") Delete Survey
+  div(class="d-flex justify-content-start mb-3")
+    form(action=`/home/my-surveys/saved/${survey._id}/delete`, method="POST")
+      button(type="submit", class="btn btn-danger") Delete Survey
 
   // Display Expiration Date
-  h2 Expiration Date
-  p Please choose an expiration date for the survey.
+  div(class="card mb-4")
+    div(class="card-header bg-success text-white")
+      h2(class="m-0") Expiration Date
+    div(class="card-body")
+      p(class="fs-5") Please choose an expiration date for the survey.
 
-  // Date Picker for Expiration Date
-  input(type="date", id="expires_at", name="expires_at", class="form-control", required)
+      // Date Picker for Expiration Date
+      input(type="date", id="expires_at", name="expires_at", class="form-control", required)
 
   // Action Buttons
-  form(action=`/home/my-surveys/saved/${survey._id}`, method="POST", class="mt-3")
-    // Hidden input to hold expiration date when form is submitted
-    input(type="hidden", id="expires_at_hidden", name="expires_at")
+  div(class="d-flex justify-content-start mt-3")
+    form(action=`/home/my-surveys/saved/${survey._id}`, method="POST")
+      // Hidden input to hold expiration date when form is submitted
+      input(type="hidden", id="expires_at_hidden", name="expires_at")
+      button(type="submit", id="publish-btn", class="btn btn-primary", disabled) Publish Survey
 
-    button(type="submit", id="publish-btn", class="btn btn-primary", disabled) Publish Survey
-
-  a(href="/home/my-surveys", class="btn btn-secondary mt-3") Back to My Surveys
+  // Back Button
+  div(class="d-flex justify-content-start mt-3")
+    a(href="/home/my-surveys", class="btn btn-secondary") Back to My Surveys
 
   script.
     // JavaScript to handle date selection and enable the Publish button

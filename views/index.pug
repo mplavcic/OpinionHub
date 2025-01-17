@@ -1,15 +1,21 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .container.mt-5
+    .text-center
+      h1.text-primary.display-4.mb-3 Welcome to #{title}
+      p.lead.text-secondary Discover, create, and participate in surveys effortlessly.
 
-  if survey_list.length
-    ul
-      each survey in survey_list
-        li
-          a(href=survey.public_url, class="fw-bold") #{survey.survey.title}
-          span(class="text-muted")  - Published on #{new Date(survey.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-
-  else
-    p(class="alert alert-warning") There are no surveys yet.
+    if survey_list.length
+      .row.justify-content-center
+        each survey in survey_list
+          .col-md-6.mb-3
+            .card.shadow-sm
+              .card-body
+                h5.card-title
+                  a(href=survey.public_url, class="fw-bold text-decoration-none") #{survey.survey.title}
+                p.card-text.text-muted 
+                  | Published on 
+                  | #{new Date(survey.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    else
+      .alert.alert-warning.text-center.mt-4 There are no surveys yet.

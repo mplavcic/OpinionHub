@@ -1,14 +1,16 @@
 extends layout
 
 block content
-  h1 Sign Up
+  h1(class='text-center mb-4') Sign Up
 
-  form(action='/signup', method='POST', class='border p-4 rounded shadow-sm')
-    div(class='mb-3')
-      label(for='name', class='form-label') Name:
-      input(type='text', id='name', name='name', placeholder='Enter your name', class='form-control', required)
-    div(class='mb-3')
-      label(for='password', class='form-label') Password:
-      input(type='password', id='password', name='password', placeholder='Enter your password', class='form-control', required)
-    div
-      button(type='submit', class='btn btn-primary w-100') Sign Up
+  .row.justify-content-center
+    .col-sm-8.col-md-6.col-lg-4
+      form(action='/signup', method='POST', class='border p-4 rounded shadow-sm bg-light')
+        div(class='mb-3')
+          label(for='name', class='form-label') Name:
+          input(type='text', id='name', name='name', placeholder='Enter your name', class='form-control form-control-lg', required, style='font-size: 1rem;')
+        div(class='mb-3')
+          label(for='password', class='form-label') Password:
+          input(type='password', id='password', name='password', placeholder='Enter your password', class='form-control form-control-lg', required, style='font-size: 1rem;')
+        div
+          button(type='submit', class='btn btn-primary w-100 py-2') Sign Up
