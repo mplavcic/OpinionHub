@@ -11,6 +11,8 @@ const moment = require("moment");
 const generateQRCode = require("../utils/qrcodeGenerator");
 const Sentiment = require("sentiment");
 const sanitizeHtml = require("sanitize-html");
+const fs = require('fs');
+const { parse } = require('json2csv');
 
 const sanitizePlainText = (input) => {
     return sanitizeHtml(input, {
@@ -346,6 +348,7 @@ exports.survey_published_detail = asyncHandler(async (req, res, next) => {
         formattedExpiresAt,
         takeCount: publishedSurvey.take_count,
         qrCode,
+        publishedSurveyId: surveyId,
     });
 });
 
@@ -367,6 +370,9 @@ exports.survey_edit_get = asyncHandler(async (req, res, next) => {
     res.render("survey_edit_form", { survey });
 });
 
+//TODO: input validation
+//TODO: optimize, first we are deleting all the questions and then creating new ones,
+//      even those that are not edited, should only delete edited
 exports.survey_edit_post = asyncHandler(async (req, res, next) => {
     const { title, description, questions } = req.body;
 
@@ -433,6 +439,92 @@ exports.survey_delete = asyncHandler(async (req, res, next) => {
     await Question.deleteMany({ survey: surveyId });
 
     res.redirect('/home/my-surveys');
+});
+
+exports.survey_export_get = asyncHandler(async (req, res, next) => {
+    const surveyId = req.params.id;
+
+    const publishedSurvey = await PublishedSurvey.findById(surveyId)
+        .populate({
+            path: "survey",
+            populate: {
+                path: "questions",
+                model: "Question",
+                select: "questionText questionType options min max placeholder",
+            },
+        });
+
+    const survey = publishedSurvey.survey;
+    const responses = await Response.find({ publishedSurvey: surveyId });
+
+    const sentiment = new Sentiment();
+    const results = [];
+
+    for (const question of survey.questions) {
+        const questionResponses = responses.filter(
+            (response) => response.question.toString() === question._id.toString()
+        );
+
+        let result = {
+            questionId: question._id.toString(),
+            questionText: question.questionText,
+        };
+
+        if (question.questionType === "multiple-choice") {
+            const counts = {};
+            question.options.forEach((option) => {
+                counts[option] = questionResponses.filter(
+                    (response) => response.responseValue === option
+                ).length;
+            });
+            result.type = "multiple-choice";
+            result.counts = counts;
+        } else if (question.questionType === "rating") {
+            const total = questionResponses.reduce(
+                (sum, response) => sum + parseInt(response.responseValue, 10),
+                0
+            );
+            const avg = questionResponses.length ? total / questionResponses.length : 0;
+            result.type = "rating";
+            result.average = avg;
+        } else if (question.questionType === "text") {
+            const texts = questionResponses.map((response) => response.responseValue);
+
+            let positiveCount = 0;
+            let neutralCount = 0;
+            let negativeCount = 0;
+
+            texts.forEach((text) => {
+                const analysis = sentiment.analyze(text);
+                if (analysis.score > 0) positiveCount++;
+                else if (analysis.score < 0) negativeCount++;
+                else neutralCount++;
+            });
+
+            result.type = "text";
+            result.positiveCount = positiveCount;
+            result.neutralCount = neutralCount;
+            result.negativeCount = negativeCount;
+        }
+
+        results.push(result);
+    }
+
+    // Convert results to CSV
+    const fields = ['questionId', 'questionText', 'type', 'positiveCount', 'neutralCount', 'negativeCount'];
+    const opts = { fields };
+
+    try {
+        const csv = parse(results, opts);
+
+        // Send the CSV file as a download
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename=survey_${surveyId}_analytics.csv`);
+        res.status(200).end(csv);
+    } catch (err) {
+        console.error('Error generating CSV:', err);
+        next(err);
+    }
 });
 
 

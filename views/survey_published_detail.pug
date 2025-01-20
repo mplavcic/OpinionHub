@@ -36,6 +36,9 @@ block content
               li(class="list-group-item") Positive Responses: #{result.positiveCount}
               li(class="list-group-item") Neutral Responses: #{result.neutralCount}
               li(class="list-group-item") Negative Responses: #{result.negativeCount}
+  .export-section.text-center.mt-5
+    h2 Export Analytics
+    a.btn.btn-primary(href=`/home/my-surveys/published/${publishedSurveyId}/export`) Export as CSV
 
   style.
     .survey-details {
@@ -51,4 +54,8 @@ block content
     .analytics .question {
       max-width: 800px;
       margin: 0 auto;
+    }
+    
+    .export-section {
+      margin-top: 20px;
     }

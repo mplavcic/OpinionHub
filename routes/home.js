@@ -41,6 +41,8 @@ router.post("/my-surveys/saved/:id/delete", survey_controller.survey_delete);
 // GET request to display details of the user's published survey
 router.get("/my-surveys/published/:id", survey_controller.survey_published_detail)
 
+router.get('/my-surveys/published/:id/export', survey_controller.survey_export_get);
+
 module.exports = router;
 
 
