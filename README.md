@@ -56,3 +56,8 @@ OpinionHub is a web application designed to simplify the creation, publication, 
    ```bash
    npm run serverstart
    ```
+## Visit the Hosted Application
+   You can access the live version of OpinionHub at:
+   https://opinionhub-ryem.onrender.com/
+
+
