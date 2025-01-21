@@ -13,7 +13,7 @@ var http = require('http');
  */
 
 var port = normalizePort(process.env.PORT);
-app.set('port', port);
+app.set('0.0.0.0', port);
 
 /**
  * Create HTTP server.
